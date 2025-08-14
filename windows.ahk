@@ -183,37 +183,27 @@ $^!l up:: ; 右 (l) 释放
     ToolTip("Mouse moved to window right")
     SetTimer(RemoveToolTip, -1000)
 }
-; === 修改滚动热键为 Alt+Win+J/K ===
-$!#j::  ; Alt+Win+J
+; === 修改滚动热键为 Alt+Win+J/K (更可靠的实现) ===
+$!#j::  ; Alt+Win+J - 按下
 {
-    ; 向下滚动
-    Click "WheelDown"
-    ToolTip("Alt+Win+J - Scroll Down")
-    SetTimer(RemoveToolTip, -1000)
-    
-    ; 支持按住连续滚动
-    KeyWait "LWin"  ; 等待Win键释放
-    while GetKeyState("j", "P") && GetKeyState("Alt", "P")
-    {
-        Click "WheelDown"
-        Sleep 100  ; 控制滚动速度
-    }
+    Click "WheelDown" ; 立即滚动一次
+    SetTimer(ScrollDown, 100) ; 启动定时器持续滚动
 }
 
-$!#k::  ; Alt+Win+K
+$!#j up:: ; Alt+Win+J - 释放
 {
-    ; 向上滚动
-    Click "WheelUp"
-    ToolTip("Alt+Win+K - Scroll Up")
-    SetTimer(RemoveToolTip, -1000)
-    
-    ; 支持按住连续滚动
-    KeyWait "LWin"
-    while GetKeyState("k", "P") && GetKeyState("Alt", "P")
-    {
-        Click "WheelUp"
-        Sleep 100
-    }
+    SetTimer(ScrollDown, 0) ; 停止滚动
+}
+
+$!#k::  ; Alt+Win+K - 按下
+{
+    Click "WheelUp" ; 立即滚动一次
+    SetTimer(ScrollUp, 100) ; 启动定时器持续滚动
+}
+
+$!#k up:: ; Alt+Win+K - 释放
+{
+    SetTimer(ScrollUp, 0) ; 停止滚动
 }
 
 
@@ -379,3 +369,15 @@ ContinuousMouseMove(direction)
 
 
 
+
+
+; === 滚动函数 ===
+ScrollDown()
+{
+    Click "WheelDown"
+}
+
+ScrollUp()
+{
+    Click "WheelUp"
+}
